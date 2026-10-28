@@ -24,6 +24,21 @@
     "@angular/core": "^14.2.0"
   },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.8.1"
+  },
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json -c tsconfig.lib.prod.json",
+    "release": "npm run release:check && npm version patch --no-git-tag-version && npm run build && cd dist && npm publish && cd .. && npm run release:git",
+    "release:check": "test \"$(git rev-parse --abbrev-ref HEAD)\" = main || { echo \"Release from the main branch\"; exit 1; }; test -z \"$(git status --porcelain)\" || { echo \"Commit or stash your changes before releasing\"; exit 1; }; npm owner ls \"$npm_package_name\" 2>/dev/null | grep -q \"^$(npm whoami 2>/dev/null) \" || { echo \"Log in to npm (npm login) as an owner of $npm_package_name first\"; exit 1; }",
+    "release:git": "git add -A && git commit -m \"release: v$npm_package_version\" && git tag -a \"v$npm_package_version\" -m \"release: v$npm_package_version\" && if git remote get-url origin >/dev/null 2>&1; then git push origin HEAD:main --follow-tags; else echo \"No git remote: release commit and tag kept locally\"; fi"
+  },
+  "devDependencies": {
+    "@angular/common": "^14.3.0",
+    "@angular/compiler": "^14.3.0",
+    "@angular/compiler-cli": "^14.3.0",
+    "@angular/core": "^14.3.0",
+    "ng-packagr": "^14.2.2",
+    "rxjs": "^7.8.2",
+    "typescript": "~4.8.4"
   }
 }
